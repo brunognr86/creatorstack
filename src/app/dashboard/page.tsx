@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 
 const supabase = createClient(
-  "https://zvlqrgdqftzqtirhzaha.supabase.co",
+  "https://zvlqrgdqftzqtlrhzaha.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2bHFyZ2RxZnR6cXRscmh6YWhhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3ODcxOTUsImV4cCI6MjA5MjM2MzE5NX0.wrtysZ_fb2oy_WUhKyCBg4GkEUL0_vnZLhDn91fV2zw"
 );
 
@@ -150,7 +150,9 @@ export default function DashboardPage() {
         <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
           {tabs.map((tab) => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition ${activeTab === tab.id ? "bg-violet-600 text-white" : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"}`}>
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition ${
+                activeTab === tab.id ? "bg-violet-600 text-white" : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
+              }`}>
               <tab.icon className="h-4 w-4" />{tab.label}
             </button>
           ))}
@@ -159,7 +161,7 @@ export default function DashboardPage() {
         {activeTab === "gerador" && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-1">
-              <div className="bg-white p-6 rounded-2xl border border-gray-100">
+              <div className="bg-white p-6 rounded-2xl border border-gray-100 sticky top-24">
                 <h3 className="font-semibold text-gray-900 mb-4">Novo Conteudo</h3>
                 <div className="space-y-4">
                   <div>
@@ -202,94 +204,4 @@ export default function DashboardPage() {
                 <div className="bg-white p-12 rounded-2xl border border-gray-100 text-center">
                   <Sparkles className="h-12 w-12 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum conteudo gerado ainda</h3>
-                  <p className="text-sm text-gray-500">Preencha o formulario e clique em "Gerar Conteudo"</p>
-                </div>
-              ) : (
-                <div className="bg-white p-6 rounded-2xl border border-gray-100">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <Hash className="h-4 w-4 text-violet-600" />
-                      <span className="text-xs font-medium text-violet-600 uppercase">{platform} / {contentType}</span>
-                    </div>
-                    <button onClick={() => handleCopy(generated)} className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition">
-                      {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
-                    </button>
-                  </div>
-                  <pre className="text-sm text-gray-800 whitespace-pre-wrap font-sans leading-relaxed">{generated}</pre>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {activeTab === "templates" && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {templates.map((t, i) => (
-              <div key={i} className="bg-white p-6 rounded-2xl border border-gray-100 hover:border-violet-200 hover:shadow-lg transition">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="p-3 bg-violet-50 rounded-xl"><t.icon className="h-6 w-6 text-violet-600" /></div>
-                  <span className="text-xs text-gray-400">{t.downloads} downloads</span>
-                </div>
-                <h3 className="font-semibold text-gray-900 mb-1">{t.name}</h3>
-                <p className="text-sm text-gray-500 mb-4">{t.category}</p>
-                <button className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 hover:border-violet-300 hover:bg-violet-50 transition">
-                  Usar Template <ChevronRight className="h-4 w-4" />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {activeTab === "historico" && (
-          <div className="space-y-3">
-            {generations.length === 0 ? (
-              <div className="bg-white p-12 rounded-2xl border border-gray-100 text-center">
-                <Clock className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500">Nenhuma geracao ainda</p>
-              </div>
-            ) : generations.map((g, i) => (
-              <div key={i} className="bg-white p-5 rounded-2xl border border-gray-100">
-                <div className="flex items-center gap-2 mb-2">
-                  <Hash className="h-4 w-4 text-violet-600" />
-                  <span className="text-xs font-medium text-violet-600 uppercase">{g.platform}</span>
-                  <span className="text-xs text-gray-400 ml-auto">{new Date(g.created_at).toLocaleDateString('pt-BR')}</span>
-                </div>
-                <p className="text-sm text-gray-700 line-clamp-3">{g.generated_text}</p>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {activeTab === "config" && (
-          <div className="max-w-2xl space-y-6">
-            <div className="bg-white p-6 rounded-2xl border border-gray-100">
-              <h3 className="font-semibold text-gray-900 mb-4">Plano Atual</h3>
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl mb-4">
-                <div>
-                  <p className="font-medium text-gray-900">{profile?.plan?.toUpperCase() || "FREE"}</p>
-                  <p className="text-sm text-gray-500">{profile?.generations_used || 0} / {profile?.generations_limit || 10} geracoes</p>
-                </div>
-                {profile?.plan === 'free' && (
-                  <button onClick={() => handleCheckout('starter')} className="px-4 py-2 bg-violet-600 text-white rounded-lg text-sm font-medium hover:bg-violet-700 transition">
-                    Fazer Upgrade
-                  </button>
-                )}
-              </div>
-              {profile?.plan === 'free' && (
-                <div className="grid grid-cols-3 gap-3">
-                  {[{ name: 'Starter', price: 'R$ 29', plan: 'starter' }, { name: 'Pro', price: 'R$ 79', plan: 'pro' }, { name: 'Business', price: 'R$ 199', plan: 'business' }].map((p) => (
-                    <button key={p.plan} onClick={() => handleCheckout(p.plan)}
-                      className="p-3 rounded-xl border border-gray-200 hover:border-violet-300 hover:bg-violet-50 transition text-center">
-                      <p className="font-semibold text-gray-900">{p.name}</p>
-                      <p className="text-sm text-gray-500">{p.price}/mes</p>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
+                 
