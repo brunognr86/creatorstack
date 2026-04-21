@@ -25,26 +25,37 @@ export default function DashboardPage() {
   const [profile, setProfile] = useState<any>(null);
   const [copied, setCopied] = useState(false);
   const [generations, setGenerations] = useState<any[]>([]);
-  const [templates] = useState([
-    { name: "Calendario Editorial 2026", category: "Planejamento", downloads: "2.4k", icon: Calendar },
-    { name: "100 Hooks Virais", category: "Engajamento", downloads: "3.1k", icon: TrendingUp },
-    { name: "Sistema de Repurposing", category: "Estrategia", downloads: "1.8k", icon: Copy },
-    { name: "Scripts de YouTube", category: "Video", downloads: "4.2k", icon: FileText },
-    { name: "Checklist Pre-Publicacao", category: "Qualidade", downloads: "5.6k", icon: Check },
-    { name: "50 Legendas para Instagram", category: "Copywriting", downloads: "6.1k", icon: Star },
-  ]);
+  const [checking, setChecking] = useState(true);
 
   useEffect(() => {
     const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        setUser(user);
-        const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-        setProfile(data);
-        loadGenerations(user.id);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          setUser(session.user);
+          const { data } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
+          setProfile(data);
+          loadGenerations(session.user.id);
+        } else {
+          window.location.href = "/auth";
+          return;
+        }
+      } catch (e) {
+        console.error(e);
       }
+      setChecking(false);
     };
     checkUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setUser(session.user);
+      } else {
+        window.location.href = "/auth";
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const loadGenerations = async (userId: string) => {
@@ -102,6 +113,23 @@ export default function DashboardPage() {
     { id: "config", label: "Configuracoes", icon: Settings },
   ];
 
+  const templates = [
+    { name: "Calendario Editorial 2026", category: "Planejamento", downloads: "2.4k", icon: Calendar },
+    { name: "100 Hooks Virais", category: "Engajamento", downloads: "3.1k", icon: TrendingUp },
+    { name: "Sistema de Repurposing", category: "Estrategia", downloads: "1.8k", icon: Copy },
+    { name: "Scripts de YouTube", category: "Video", downloads: "4.2k", icon: FileText },
+    { name: "Checklist Pre-Publicacao", category: "Qualidade", downloads: "5.6k", icon: Check },
+    { name: "50 Legendas para Instagram", category: "Copywriting", downloads: "6.1k", icon: Star },
+  ];
+
+  if (checking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Loader2 className="h-8 w-8 text-violet-600 animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-100 sticky top-0 z-10">
@@ -120,7 +148,7 @@ export default function DashboardPage() {
                 <p className="text-sm font-medium text-gray-900">{user?.email || "Convidado"}</p>
                 <p className="text-xs text-gray-500 uppercase">{profile?.plan || "free"}</p>
               </div>
-              <button onClick={() => supabase.auth.signOut()} className="text-gray-400 hover:text-gray-600">
+              <button onClick={() => supabase.auth.signOut().then(() => window.location.href = "/auth")} className="text-gray-400 hover:text-gray-600">
                 <LogOut className="h-5 w-5" />
               </button>
             </div>
@@ -132,7 +160,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
             { label: "Geracoes", value: profile?.generations_used || 0, max: profile?.generations_limit || 10, icon: Sparkles },
-            { label: "Templates", value: "6", max: profile?.plan === 'free' ? "6" : "200+", icon: LayoutTemplate },
+            { label: "Templates", value: "6", max: "200+", icon: LayoutTemplate },
             { label: "Posts", value: generations.length, max: "∞", icon: FileText },
             { label: "Plano", value: profile?.plan?.toUpperCase() || "FREE", max: "", icon: BarChart3 },
           ].map((stat, i) => (
@@ -204,4 +232,94 @@ export default function DashboardPage() {
                 <div className="bg-white p-12 rounded-2xl border border-gray-100 text-center">
                   <Sparkles className="h-12 w-12 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum conteudo gerado ainda</h3>
-                 
+                  <p className="text-sm text-gray-500">Preencha o formulario e clique em &quot;Gerar Conteudo&quot;</p>
+                </div>
+              ) : (
+                <div className="bg-white p-6 rounded-2xl border border-gray-100">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <Hash className="h-4 w-4 text-violet-600" />
+                      <span className="text-xs font-medium text-violet-600 uppercase">{platform} / {contentType}</span>
+                    </div>
+                    <button onClick={() => handleCopy(generated)} className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition">
+                      {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                    </button>
+                  </div>
+                  <pre className="text-sm text-gray-800 whitespace-pre-wrap font-sans leading-relaxed">{generated}</pre>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === "templates" && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {templates.map((t, i) => (
+              <div key={i} className="bg-white p-6 rounded-2xl border border-gray-100 hover:border-violet-200 hover:shadow-lg transition">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="p-3 bg-violet-50 rounded-xl"><t.icon className="h-6 w-6 text-violet-600" /></div>
+                  <span className="text-xs text-gray-400">{t.downloads} downloads</span>
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-1">{t.name}</h3>
+                <p className="text-sm text-gray-500 mb-4">{t.category}</p>
+                <button className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 hover:border-violet-300 hover:bg-violet-50 transition">
+                  Usar Template <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {activeTab === "historico" && (
+          <div className="space-y-3">
+            {generations.length === 0 ? (
+              <div className="bg-white p-12 rounded-2xl border border-gray-100 text-center">
+                <Clock className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-500">Nenhuma geracao ainda</p>
+              </div>
+            ) : generations.map((g, i) => (
+              <div key={i} className="bg-white p-5 rounded-2xl border border-gray-100">
+                <div className="flex items-center gap-2 mb-2">
+                  <Hash className="h-4 w-4 text-violet-600" />
+                  <span className="text-xs font-medium text-violet-600 uppercase">{g.platform}</span>
+                  <span className="text-xs text-gray-400 ml-auto">{new Date(g.created_at).toLocaleDateString('pt-BR')}</span>
+                </div>
+                <p className="text-sm text-gray-700 line-clamp-3">{g.generated_text}</p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {activeTab === "config" && (
+          <div className="max-w-2xl space-y-6">
+            <div className="bg-white p-6 rounded-2xl border border-gray-100">
+              <h3 className="font-semibold text-gray-900 mb-4">Plano Atual</h3>
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl mb-4">
+                <div>
+                  <p className="font-medium text-gray-900">{profile?.plan?.toUpperCase() || "FREE"}</p>
+                  <p className="text-sm text-gray-500">{profile?.generations_used || 0} / {profile?.generations_limit || 10} geracoes</p>
+                </div>
+                {profile?.plan === 'free' && (
+                  <button onClick={() => handleCheckout('starter')} className="px-4 py-2 bg-violet-600 text-white rounded-lg text-sm font-medium hover:bg-violet-700 transition">
+                    Fazer Upgrade
+                  </button>
+                )}
+              </div>
+              {profile?.plan === 'free' && (
+                <div className="grid grid-cols-3 gap-3">
+                  {[{ name: 'Starter', price: 'R$ 29', plan: 'starter' }, { name: 'Pro', price: 'R$ 79', plan: 'pro' }, { name: 'Business', price: 'R$ 199', plan: 'business' }].map((p) => (
+                    <button key={p.plan} onClick={() => handleCheckout(p.plan)}
+                      className="p-3 rounded-xl border border-gray-200 hover:border-violet-300 hover:bg-violet-50 transition text-center">
+                      <p className="font-semibold text-gray-900">{p.name}</p>
+                      <p className="text-sm text-gray-500">{p.price}/mes</p>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
