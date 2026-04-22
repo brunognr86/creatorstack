@@ -2,17 +2,12 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase-client";
 import {
   Zap, Sparkles, LayoutTemplate, Calendar, Settings,
   LogOut, Copy, Check, ChevronRight, Star, TrendingUp,
   Clock, Hash, FileText, BarChart3, Loader2
 } from "lucide-react";
-
-const supabase = createClient(
-  "https://zvlqrgdqftzqtlrhzaha.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2bHFyZ2RxZnR6cXRscmh6YWhhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3ODcxOTUsImV4cCI6MjA5MjM2MzE5NX0.wrtysZ_fb2oy_WUhKyCBg4GkEUL0_vnZLhDn91fV2zw"
-);
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("gerador");
@@ -109,15 +104,15 @@ export default function DashboardPage() {
   const tabs = [
     { id: "gerador", label: "Gerador", icon: Sparkles },
     { id: "templates", label: "Templates", icon: LayoutTemplate },
-    { id: "historico", label: "Historico", icon: Clock },
-    { id: "config", label: "Configuracoes", icon: Settings },
+    { id: "histórico", label: "Histórico", icon: Clock },
+    { id: "config", label: "Configurações", icon: Settings },
   ];
 
   const templates = [
     { name: "Calendario Editorial 2026", category: "Planejamento", downloads: "2.4k", icon: Calendar },
     { name: "100 Hooks Virais", category: "Engajamento", downloads: "3.1k", icon: TrendingUp },
-    { name: "Sistema de Repurposing", category: "Estrategia", downloads: "1.8k", icon: Copy },
-    { name: "Scripts de YouTube", category: "Video", downloads: "4.2k", icon: FileText },
+    { name: "Sistema de Repurposing", category: "Estratégia", downloads: "1.8k", icon: Copy },
+    { name: "Scripts de YouTube", category: "Vídeo", downloads: "4.2k", icon: FileText },
     { name: "Checklist Pre-Publicacao", category: "Qualidade", downloads: "5.6k", icon: Check },
     { name: "50 Legendas para Instagram", category: "Copywriting", downloads: "6.1k", icon: Star },
   ];
@@ -159,7 +154,7 @@ export default function DashboardPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
-            { label: "Geracoes", value: profile?.generations_used || 0, max: profile?.generations_limit || 10, icon: Sparkles },
+            { label: "Gerações", value: profile?.generations_used || 0, max: profile?.generations_limit || 10, icon: Sparkles },
             { label: "Templates", value: "6", max: "200+", icon: LayoutTemplate },
             { label: "Posts", value: generations.length, max: "∞", icon: FileText },
             { label: "Plano", value: profile?.plan?.toUpperCase() || "FREE", max: "", icon: BarChart3 },
@@ -178,9 +173,7 @@ export default function DashboardPage() {
         <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
           {tabs.map((tab) => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition ${
-                activeTab === tab.id ? "bg-violet-600 text-white" : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
-              }`}>
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition ${activeTab === tab.id ? "bg-violet-600 text-white" : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"}`}>
               <tab.icon className="h-4 w-4" />{tab.label}
             </button>
           ))}
@@ -190,7 +183,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-1">
               <div className="bg-white p-6 rounded-2xl border border-gray-100 sticky top-24">
-                <h3 className="font-semibold text-gray-900 mb-4">Novo Conteudo</h3>
+                <h3 className="font-semibold text-gray-900 mb-4">Novo Conteúdo</h3>
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Tema/Assunto</label>
@@ -221,9 +214,9 @@ export default function DashboardPage() {
                   </div>
                   <button onClick={handleGenerate} disabled={loading || !topic.trim() || !user}
                     className="w-full bg-violet-600 text-white py-3 rounded-xl font-medium hover:bg-violet-700 transition disabled:opacity-50 flex items-center justify-center gap-2">
-                    {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> Gerando...</> : <><Sparkles className="h-4 w-4" /> Gerar Conteudo</>}
+                    {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> Gerando...</> : <><Sparkles className="h-4 w-4" /> Gerar Conteúdo</>}
                   </button>
-                  {!user && <p className="text-xs text-red-500 text-center">Faca login para gerar conteudo</p>}
+                  {!user && <p className="text-xs text-red-500 text-center">Faca login para gerar conteúdo</p>}
                 </div>
               </div>
             </div>
@@ -231,8 +224,8 @@ export default function DashboardPage() {
               {!generated ? (
                 <div className="bg-white p-12 rounded-2xl border border-gray-100 text-center">
                   <Sparkles className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum conteudo gerado ainda</h3>
-                  <p className="text-sm text-gray-500">Preencha o formulario e clique em &quot;Gerar Conteudo&quot;</p>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum conteúdo gerado ainda</h3>
+                  <p className="text-sm text-gray-500">Preencha o formulário e clique em &quot;Gerar Conteúdo&quot;</p>
                 </div>
               ) : (
                 <div className="bg-white p-6 rounded-2xl border border-gray-100">
@@ -270,7 +263,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {activeTab === "historico" && (
+        {activeTab === "histórico" && (
           <div className="space-y-3">
             {generations.length === 0 ? (
               <div className="bg-white p-12 rounded-2xl border border-gray-100 text-center">
@@ -297,7 +290,7 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl mb-4">
                 <div>
                   <p className="font-medium text-gray-900">{profile?.plan?.toUpperCase() || "FREE"}</p>
-                  <p className="text-sm text-gray-500">{profile?.generations_used || 0} / {profile?.generations_limit || 10} geracoes</p>
+                  <p className="text-sm text-gray-500">{profile?.generations_used || 0} / {profile?.generations_limit || 10} gerações</p>
                 </div>
                 {profile?.plan === 'free' && (
                   <button onClick={() => handleCheckout('starter')} className="px-4 py-2 bg-violet-600 text-white rounded-lg text-sm font-medium hover:bg-violet-700 transition">
