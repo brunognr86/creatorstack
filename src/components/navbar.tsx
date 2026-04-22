@@ -17,10 +17,10 @@ export function Navbar() {
           </Link>
           <div className="hidden md:flex items-center gap-8">
             <a href="#funcionalidades" className="text-sm text-gray-600 hover:text-gray-900">Funcionalidades</a>
-            <a href="#precos" className="text-sm text-gray-600 hover:text-gray-900">Precos</a>
+            <a href="#preços" className="text-sm text-gray-600 hover:text-gray-900">Preços</a>
             <a href="#depoimentos" className="text-sm text-gray-600 hover:text-gray-900">Depoimentos</a>
             <Link href="/auth/" className="text-sm text-gray-600 hover:text-gray-900">Entrar</Link>
-            <Link href="/auth/" className="bg-violet-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-violet-700">Comecar Gratis</Link>
+            <Link href="/auth/" className="bg-violet-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-violet-700">Começar Grátis</Link>
           </div>
           <button className="md:hidden p-2" onClick={() => setOpen(!open)}>
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -29,10 +29,10 @@ export function Navbar() {
         {open && (
           <div className="md:hidden pb-4 space-y-3">
             <a href="#funcionalidades" className="block text-sm text-gray-600 py-2">Funcionalidades</a>
-            <a href="#precos" className="block text-sm text-gray-600 py-2">Precos</a>
+            <a href="#preços" className="block text-sm text-gray-600 py-2">Preços</a>
             <a href="#depoimentos" className="block text-sm text-gray-600 py-2">Depoimentos</a>
             <Link href="/auth/" className="block text-sm text-gray-600 py-2">Entrar</Link>
-            <Link href="/auth/" className="block bg-violet-600 text-white px-4 py-2 rounded-lg text-sm font-medium text-center">Comecar Gratis</Link>
+            <Link href="/auth/" className="block bg-violet-600 text-white px-4 py-2 rounded-lg text-sm font-medium text-center">Começar Grátis</Link>
           </div>
         )}
       </div>
