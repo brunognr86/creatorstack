@@ -11,13 +11,13 @@ export function Footer() {
               <Zap className="h-5 w-5 text-violet-400" />
               <span className="text-lg font-bold text-white">CreatorStack</span>
             </div>
-            <p className="text-sm text-gray-400">A plataforma tudo-em-um para criadores de conteudo.</p>
+            <p className="text-sm text-gray-400">A plataforma tudo-em-um para criadores de conteúdo.</p>
           </div>
           <div>
             <h4 className="text-white font-semibold mb-4">Produto</h4>
             <ul className="space-y-2 text-sm">
               <li><a href="#funcionalidades" className="hover:text-white">Funcionalidades</a></li>
-              <li><a href="#precos" className="hover:text-white">Precos</a></li>
+              <li><a href="#preços" className="hover:text-white">Preços</a></li>
             </ul>
           </div>
           <div>
