@@ -2,13 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase-client";
 import { Zap, Eye, EyeOff, ArrowRight } from "lucide-react";
-
-const supabase = createClient(
-  "https://zvlqrgdqftzqtlrhzaha.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2bHFyZ2RxZnR6cXRscmh6YWhhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3ODcxOTUsImV4cCI6MjA5MjM2MzE5NX0.wrtysZ_fb2oy_WUhKyCBg4GkEUL0_vnZLhDn91fV2zw"
-);
 
 export default function AuthPage() {
   const [mode, setMode] = useState<"login" | "register">("register");
@@ -111,7 +106,7 @@ export default function AuthPage() {
 
               <button type="submit" disabled={loading}
                 className="w-full bg-violet-600 text-white py-3 rounded-xl font-medium hover:bg-violet-700 transition disabled:opacity-50 flex items-center justify-center gap-2">
-                {loading ? "Carregando..." : mode === "register" ? "Criar Conta Gratis" : "Entrar"}
+                {loading ? "Carregando..." : mode === "register" ? "Criar Conta Grátis" : "Entrar"}
                 {!loading && <ArrowRight className="h-4 w-4" />}
               </button>
             </form>
